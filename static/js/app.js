@@ -1,28 +1,40 @@
 // from data.js
 var tableData = data;
-console.log(tableData)
+
 // YOUR CODE HERE!
 
 
-var tbody = d3.select("tbody");
-function populateTableData(){
-    tableData.map(data => {
-        var row = tbody.append("tr")
+var tbody = d3.select("#ufo-tbody");
+
+function populateTableData(data){
+    data.map(data => {
+        var row = tbody.append("tr");
+
         row.append("td").text(data.datetime)
-        row.append("td").text(data.city).attr("class","text-capitalize")
-        row.append("td").text(data.state).attr("class","text-uppercase")
-        row.append("td").text(data.country).attr("class","text-uppercase")
-        row.append("td").text(data.shape).attr("class","text-capitalize")
-        row.append("td").text(data.durationMinutes)
-        row.append("td").text(data.comments)
+        row.append("td").text(data.city).attr("class","text-capitalize");
+        row.append("td").text(data.state).attr("class","text-uppercase");
+        row.append("td").text(data.country).attr("class","text-uppercase");
+        row.append("td").text(data.shape).attr("class","text-capitalize");
+        row.append("td").text(data.durationMinutes);
+        row.append("td").text(data.comments);
 
     });
 }
-populateTableData();
+
+populateTableData(tableData);
+
+function filterData(event){
+    var date = d3.select("#datetime").property("value");
+    var filteredData = tableData.filter(ufo => ufo.datetime === date);
+    tbody.text("");
+    populateTableData(filteredData);
+    
+}
+var filterBtn = d3.select("#filter-btn");
+filterBtn.on("click",filterData);
+
 /*
 console.log("Row X " + date)
-
-
 tableData.forEach(element => {
     var newRow   = tableRef.insertRow();
     var dateCell  = newRow.insertCell(0);
@@ -47,21 +59,6 @@ tableData.forEach(element => {
     shapeCell.appendChild(shapeText);
     durationCell.appendChild(durationText);
     commentsCell.appendChild(commentsText);
-});
+});*/
 
 
-
-
-
-/*
-tableData.map((geographicData) => {
-    var date = tableData.date
-    console.log(tableData.date)
-    var trow;
-    trow = tbody.append("tr");
-    trow.append("td").text(date);
-    
-  
-    });
-    */
-  
