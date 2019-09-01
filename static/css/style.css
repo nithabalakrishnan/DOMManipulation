@@ -16,6 +16,7 @@ body {
   min-height: 100%;
   padding-bottom: 130px;
   overflow: auto;
+  background: #4e5d6c;
 }
 
 /* The footer is positioned at the bottom of the page */
@@ -52,7 +53,16 @@ body {
   width: 35px;
   color: white;
 }
-
+.font-style{
+  color : aliceblue;
+  font-family: sans-serif;
+  
+  
+}
+.container{
+  margin-top: 20px;
+  color : aliceblue
+}
 /* Adding styles to the aside and filter form */
 .ufo-form {
   margin-top: 50px;
