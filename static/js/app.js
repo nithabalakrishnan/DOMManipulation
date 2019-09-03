@@ -1,16 +1,16 @@
 var tableData = data;
 var tbody = d3.select("#ufo-tbody");
-var filterDiv = d3.select("#filter-date");
-var filterBtn = d3.select("#filter-btn");
 var resetBtn = d3.select("#reset-btn");
-var dropDownBtn = d3.select("#city-dropdown-btn");
+var dateBtn = d3.select("#datetime")
+var cityDropDownBtn = d3.select("#select-city");
+var stateDropDownBtn = d3.select("#select-state");
+var shapeDropDownBtn = d3.select("#select-shape");
 var dropDownMenuDiv = d3.select("#city-dropdown");
+
 var cities =[];
 var states = [];
 var countries = [];
 var shapes = [];
-
-
 
 tableData.forEach(dataVal => {
     cities.push(dataVal.city);
@@ -26,26 +26,32 @@ var distinctShape = [...new Set(shapes)].sort();
 var selectCity = document.getElementById("select-city");
 var selectShape = document.getElementById("select-shape");
 var selectSate = document.getElementById("select-state");
+var selCity = document.getElementById("select-city");
 
 
+populateDropDownMenu(selCity,distinctCities);
 populateDropDownMenu(selectCity,distinctCities);
 populateDropDownMenu(selectSate,distinctStates);
 populateDropDownMenu(selectShape,distinctShape);
 
+// Cloning the each div for later loading to irginal state
+var originalDate = $("#datetime").clone();
+var originalCity = $("#select-city").clone();
+var originalState = $("#select-state").clone();
+var originalShape = $("#select-shape").clone();
+
 //dropDownBtn.on("click",populateDropDownMenu),
 function populateDropDownMenu(choice,optVal) {
     
-    
+    console.log("items: ",optVal)
     
     for (var i = 0; i < optVal.length; i++) {                
-        var option = document.createElement("OPTION"), 
+        var option = document.createElement("OPTION");
         txt = document.createTextNode(optVal[i]);
         option.appendChild(txt);
         option.setAttribute("value", optVal[i]);
         option.setAttribute("class","text-uppercase");
         choice.insertBefore(option, choice.lastChild);
-        
-        
       } 
 }
 
@@ -62,7 +68,6 @@ function populateTableData(data) {
         row.append("td").text(data.shape).attr("class","text-capitalize font-style");
         row.append("td").text(data.durationMinutes).attr("class","font-style");
         row.append("td").text(data.comments).attr("class","font-style");
-
     });
 }
 
@@ -71,48 +76,38 @@ populateTableData(tableData);
 
 function loadWarning(message){
     console.log("Inside loadWarning!!")
-   
     var alertDiv = filterDiv.append("div").attr("class","alert alert-danger alert-dismissible fade  show");
-    
     alertDiv.append("button").attr("type","button").attr("class","close").text("&times;");
-    
-    /*alertDiv.insert("strong").text(message);*/
-    
 }
 function filterData(event){
-    
-    var date = d3.select("#datetime").property("value");
-    var startDate = '1/1/2010';
-    var endDate = '1/13/2010';
+    console.log("entering filtered ")
     var city = d3.select("#select-city").property("value");
     var state = d3.select("#select-state").property("value");
     var shape = d3.select("#select-shape").property("value");
-
-    console.log("city: ",city)
-    console.log(state)
-    console.log(shape)
-
+    formDate =document.getElementById("datetime").value;
+    var date = new Date(formDate)
+    var formattedDate = (date.getMonth() + 1) + '/' + (date.getDate() + 1) + '/' +  date.getFullYear()
     var formData = {};
 
-    if(date !== '') {
-    
-        console.log(date)
-        formData["datetime"] = date;
+    if(formDate !== ""){
+        console.log("Date entered is : ",formattedDate);
+        formData["datetime"] = formattedDate;
+
     }
     if(city !== ' '){
     
-        console.log("city :",city)
+        
         formData["city"] = city;
     }
     if(state !== ' '){
-        console.log("Sate :",state)
+        
         formData["state"] = state;
     }
     if(shape != ' '){
-        console.log("Shape :",shape)
+        
         formData["shape"] = shape;
     }
-
+    
     var filteredData = tableData.filter(function(item) {
         for (var key in formData) {
             if (item[key] != formData[key])
@@ -120,51 +115,55 @@ function filterData(event){
         }
         return true;
     });
-    if(filteredData.length > 0){
-        console.log("Data size : ",filteredData.length)
+    if(filteredData.length > 0) {
+        console.log("Data size > 0: ",filteredData.length)
         populateTableData(filteredData);
     }else{
-        console.log("Data size : ",filteredData.length)
-        populateTableData(tableData);
+        console.log("Data size warning: ",filteredData.length)
         $("#buttonAlert").addClass('show')
-    }
-    
-    
+    }   
 }
 
 function reset(event) {
     populateTableData(tableData);
+    $('#buttonAlert').removeClass('show');
 }
 
-filterBtn.on("click",filterData);
+function test(event){
+    
+    
+    var city = d3.select("#select-city").property("value");
+    var filterCityData = tableData.filter(item => item.city === city)
+    console.log(city)
+    console.log(filterCityData)
+    var menuStateList = [];
+    var menuShapeList = [];
+    filterCityData.forEach(dataVal => {
+        
+        menuStateList.push(dataVal.state);
+        menuShapeList.push(dataVal.shape);
+    })
+    console.log(menuStateList)
+    distinctStates = [...new Set(menuStateList)].sort();
+    distinctShape = [...new Set(menuShapeList)].sort();
+    stateDropDownBtn.text ("");
+    shapeDropDownBtn.text ("");
+    populateDropDownMenu(selectSate,distinctStates);
+    populateDropDownMenu(selectShape,distinctShape);
+    
+    filterData();
+
+
+}
+function test2(event){
+    x= document.getElementById("datetime").value;
+    var EventTarget = event.
+    console.log(x);
+}
+
+//filterBtn.on("click",filterData);
 resetBtn.on("click",reset);
+cityDropDownBtn.on("change",filterData);
 
-/*
-console.log("Row X " + date)
-tableData.forEach(element => {
-    var newRow   = tableRef.insertRow();
-    var dateCell  = newRow.insertCell(0);
-    var cityCell  = newRow.insertCell(1);
-    var stateCell  = newRow.insertCell(2);
-    var countryCell  = newRow.insertCell(3);
-    var shapeCell  = newRow.insertCell(4);
-    var durationCell  = newRow.insertCell(5);
-    var commentsCell  = newRow.insertCell(6);
-    // Append a text node to the cell
-    var dateText  = document.createTextNode(element.date);
-    var cityText  = document.createTextNode(element.city.charAt(0).toUpperCase() + element.city.slice(1));
-    var stateText  = document.createTextNode(element.state.toUpperCase());
-    var countryText  = document.createTextNode(element.country.toUpperCase());
-    var shapeText  = document.createTextNode(element.shape.charAt(0).toUpperCase() + element.shape.slice(1));
-    var durationText  = document.createTextNode(element.durationMinutes);
-    var commentsText  = document.createTextNode(element.comments);
-    dateCell.appendChild(dateText);
-    cityCell.appendChild(cityText);
-    stateCell.appendChild(stateText);
-    countryCell.appendChild(countryText);
-    shapeCell.appendChild(shapeText);
-    durationCell.appendChild(durationText);
-    commentsCell.appendChild(commentsText);
-});*/
-
-
+stateDropDownBtn.on("change",filterData)
+shapeDropDownBtn.on("change",filterData)
